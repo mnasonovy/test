@@ -86,6 +86,28 @@ public:
         return result;
     }
 
+    template <typename U>
+    auto operator*(const U& operand) const {
+        if constexpr (std::is_same_v<U, T>) {
+            Vector result(_size);
+            for (size_t i = 0; i < _size; ++i) {
+                result._elem[i] = _elem[i] * operand;
+            }
+            return result;
+        }
+        else if constexpr (std::is_same_v<U, std::complex<double>>) {
+            if (_size != operand.size_) {
+                throw std::invalid_argument("Vectors must have the same dimension");
+            }
+
+            std::complex<double> result = 0.0;
+            for (size_t i = 0; i < _size; ++i) {
+                result += _elem[i] * std::conj(operand._elem[i]);
+            }
+            return result;
+        }
+    }
+
     Vector operator*(const T& scalar) const {
         Vector result(_size);
         for (size_t i = 0; i < _size; ++i) {
